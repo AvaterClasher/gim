@@ -158,6 +158,15 @@ func editorProcessKeypress() {
 
 type abuf []byte
 
+func abufInit() abuf {
+	var p abuf
+	return p
+}
+
+func (p abuf) abAppend(s []byte) {
+	p = append(p, s...)
+}
+
 /* Output */
 
 func editorRefreshScreen() {
@@ -168,7 +177,7 @@ func editorRefreshScreen() {
 }
 
 func editorDrawRows() {
-	for y := 0; y < E.screenRows - 1; y++ {
+	for y := 0; y < E.screenRows-1; y++ {
 		io.WriteString(os.Stdout, "~\r\n")
 	}
 	io.WriteString(os.Stdout, "~")
