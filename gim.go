@@ -107,9 +107,20 @@ func getCursorPosition(rows *int, cols *int) int {
 		}
 		buf = append(buf, buffer[0])
 	}
-	fmt.Printf("\r\n%q\r\n", string(buf[1:]))
-	editorReadKey()
-	return -1
+	if string(buf[0:2]) != "\x1b[" {
+		log.Printf("Failed to read rows;cols from tty\n")
+		return -1
+	}
+	if n, e := fmt.Sscanf(string(buf[2:]), "%d;%d", rows, cols); n != 2 || e != nil {
+		if e != nil {
+			log.Printf("getCursorPosition: fmt.Sscanf() failed: %s\n", e)
+		}
+		if n != 2 {
+			log.Printf("getCursorPosition: got %d items, wanted 2\n", n)
+		}
+		return -1
+	}
+	return 0
 }
 
 func getWindowSize(rows *int, cols *int) int {
