@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io"
 	"log"
 	"os"
@@ -21,6 +22,8 @@ type Termios struct {
 }
 
 type editorConfig struct {
+	screenRows  int
+	screenCols  int
 	origTermios *Termios
 }
 
@@ -140,9 +143,16 @@ func editorDrawRows() {
 
 /* INIT / MAIN FUNC */
 
+func initEditor() {
+	if getWindowSize(&E.screenRows, &E.screenCols) == -1 {
+		die(fmt.Errorf("couldn't get screen size"))
+	}
+}
+
 func main() {
 	enableRawMode()
 	defer disableRawMode()
+	initEditor()
 	for {
 		editorRefreshScreen()
 		editorProcessKeypress()
