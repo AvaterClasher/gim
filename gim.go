@@ -154,6 +154,10 @@ func editorProcessKeypress() {
 	}
 }
 
+/* Append Buffer */
+
+type abuf []byte
+
 /* Output */
 
 func editorRefreshScreen() {
