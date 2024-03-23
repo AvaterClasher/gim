@@ -17,6 +17,8 @@ const (
 	ARROW_RIGHT = 1000 + iota
 	ARROW_UP    = 1000 + iota
 	ARROW_DOWN  = 1000 + iota
+	PAGE_UP     = 1000 + iota
+	PAGE_DOWN   = 1000 + iota
 )
 
 /* DATA */
@@ -106,28 +108,40 @@ func editorReadKey() int {
 	}
 	if buffer[0] == '\x1b' {
 		var seq [2]byte
-		cc, _ = os.Stdin.Read(seq[:])
-		if cc != 2 {
+		if cc, _ = os.Stdin.Read(seq[:]); cc != 2 {
 			return '\x1b'
 		}
 
 		if seq[0] == '[' {
-			switch seq[1] {
-			case 'A':
-				return ARROW_UP
-			case 'B':
-				return ARROW_DOWN
-			case 'C':
-				return ARROW_RIGHT
-			case 'D':
-				return ARROW_LEFT
+			if seq[1] >= '0' && seq[1] <= '9' {
+				if cc, err = os.Stdin.Read(buffer[:]); cc != 1 {
+					return '\x1b'
+				}
+				if buffer[0] == '~' {
+					switch seq[1] {
+					case '5':
+						return PAGE_UP
+					case '6':
+						return PAGE_DOWN
+					}
+				}
+			} else {
+				switch seq[1] {
+				case 'A':
+					return ARROW_UP
+				case 'B':
+					return ARROW_DOWN
+				case 'C':
+					return ARROW_RIGHT
+				case 'D':
+					return ARROW_LEFT
+				}
 			}
 		}
 
 		return '\x1b'
 	}
 	return int(buffer[0])
-
 }
 
 func getCursorPosition(rows *int, cols *int) int {
