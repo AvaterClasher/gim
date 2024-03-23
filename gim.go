@@ -36,11 +36,18 @@ type Termios struct {
 	Ospeed uint32
 }
 
+type erow struct {
+	size int
+	char []byte
+}
+
 type editorConfig struct {
 	cy          int
 	cx          int
 	screenRows  int
 	screenCols  int
+	numRows     int
+	row         erow
 	origTermios *Termios
 }
 
