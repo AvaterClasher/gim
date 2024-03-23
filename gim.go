@@ -268,9 +268,7 @@ func editorMoveCursor(key int) {
 			E.cx--
 		}
 	case ARROW_RIGHT:
-		if E.cx != E.screenCols-1 {
-			E.cx++
-		}
+		E.cx++
 	case ARROW_UP:
 		if E.cy != 0 {
 			E.cy--
