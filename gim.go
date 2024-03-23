@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"io"
 	"log"
@@ -222,10 +223,19 @@ func getWindowSize(rows *int, cols *int) int {
 
 /*** file I/O ***/
 
-func editorOpen() {
-	var line = "Hello, World!"
+func editorOpen(filename string) {
+	fd, err := os.Open(filename)
+	if err != nil {
+		die(err)
+	}
+	defer fd.Close()
+	fp := bufio.NewReader(fd)
 
-	E.rows.chars = []byte(line)
+	line, err := fp.ReadBytes('\n')
+	if err != nil {
+		die(err)
+	}
+	E.rows.chars = line[:len(line)-1]
 	E.numRows = 1
 }
 
@@ -350,7 +360,9 @@ func main() {
 	enableRawMode()
 	defer disableRawMode()
 	initEditor()
-	editorOpen()
+	if len(os.Args) > 1 {
+		editorOpen(os.Args[1])
+	}
 	for {
 		editorRefreshScreen()
 		editorProcessKeypress()
