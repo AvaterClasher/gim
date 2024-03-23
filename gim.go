@@ -37,8 +37,7 @@ type Termios struct {
 }
 
 type erow struct {
-	size int
-	char []byte
+	chars []byte
 }
 
 type editorConfig struct {
@@ -221,6 +220,15 @@ func getWindowSize(rows *int, cols *int) int {
 	return -1
 }
 
+/*** file I/O ***/
+
+func editorOpen() {
+	var line = "Hello, World!"
+
+	E.row.chars = []byte(line)
+	E.numRows = 1
+}
+
 /* Input */
 
 func editorMoveCursor(key int) {
@@ -330,6 +338,7 @@ func main() {
 	enableRawMode()
 	defer disableRawMode()
 	initEditor()
+	editorOpen()
 	for {
 		editorRefreshScreen()
 		editorProcessKeypress()
