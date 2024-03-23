@@ -427,6 +427,7 @@ func editorRefreshScreen() {
 	ab.abAppend("\x1b[H")
 	editorDrawRows(&ab)
 	editorDrawStatusBar(&ab)
+	editorDrawMessageBar(&ab)
 	ab.abAppend(fmt.Sprintf("\x1b[%d;%dH", (E.cy-E.rowoff)+1, (E.rx-E.coloff)+1))
 	ab.abAppend("\x1b[?25h")
 	_, e := io.WriteString(os.Stdout, ab.String())
@@ -501,6 +502,17 @@ func editorDrawStatusBar(ab *abuf) {
 func editorSetStatusMessage(args ...interface{}) {
 	E.statusmsg = fmt.Sprintf(args[0].(string), args[1:]...)
 	E.statusmsg_time = time.Now()
+}
+
+func editorDrawMessageBar(ab *abuf) {
+	ab.abAppend("\x1b[K")
+	msglen := len(E.statusmsg)
+	if msglen > E.screenCols {
+		msglen = E.screenCols
+	}
+	if msglen > 0 && (time.Now().Sub(E.statusmsg_time) < 5*time.Second) {
+		ab.abAppend(E.statusmsg)
+	}
 }
 
 /* INIT / MAIN FUNC */
