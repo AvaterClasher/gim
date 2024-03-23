@@ -421,6 +421,7 @@ func editorRefreshScreen() {
 	ab.abAppend("\x1b[25l")
 	ab.abAppend("\x1b[H")
 	editorDrawRows(&ab)
+	editorDrawStatusBar(&ab)
 	ab.abAppend(fmt.Sprintf("\x1b[%d;%dH", (E.cy-E.rowoff)+1, (E.rx-E.coloff)+1))
 	ab.abAppend("\x1b[?25h")
 	_, e := io.WriteString(os.Stdout, ab.String())
@@ -463,6 +464,14 @@ func editorDrawRows(ab *abuf) {
 		ab.abAppend("\x1b[K")
 		ab.abAppend("\r\n")
 	}
+}
+
+func editorDrawStatusBar(ab *abuf) {
+	ab.abAppend("\x1b[7m")
+	for i := 0; i < E.screenCols; i++ {
+		ab.abAppend(" ")
+	}
+	ab.abAppend("\x1b[m")
 }
 
 /* INIT / MAIN FUNC */
