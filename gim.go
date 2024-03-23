@@ -56,6 +56,7 @@ type editorConfig struct {
 	screenCols  int
 	numRows     int
 	rows        []erow
+	filename    string
 	origTermios *Termios
 }
 
@@ -280,6 +281,7 @@ func editorAppendRow(s []byte) {
 /*** file I/O ***/
 
 func editorOpen(filename string) {
+	E.filename = filename
 	fd, err := os.Open(filename)
 	if err != nil {
 		die(err)
