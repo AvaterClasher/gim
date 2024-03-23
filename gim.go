@@ -26,6 +26,8 @@ type Termios struct {
 }
 
 type editorConfig struct {
+	cy          int
+	cx          int
 	screenRows  int
 	screenCols  int
 	origTermios *Termios
