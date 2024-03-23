@@ -1,9 +1,9 @@
 gim: gim.go
 	go build gim.go
-	./gim gim.go
+	./gim test.txt
 
 run:
-	./gim gim.go
+	./gim test.txt
 
 clean:
 	-rm -rf gim
