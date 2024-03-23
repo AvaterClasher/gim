@@ -334,6 +334,12 @@ func editorScroll() {
 	if E.cy >= E.rowoff+E.screenRows {
 		E.rowoff = E.cy - E.screenRows + 1
 	}
+	if E.cx < E.coloff {
+		E.coloff = E.cx
+	}
+	if E.cx >= E.coloff+E.screenCols {
+		E.coloff = E.cx - E.screenCols + 1
+	}
 }
 
 func editorRefreshScreen() {
@@ -369,11 +375,14 @@ func editorDrawRows(ab *abuf) {
 				ab.abAppend("~")
 			}
 		} else {
-			length := len(E.rows[filerow].chars)
+			length := len(E.rows[filerow].chars) - E.coloff
+			if length < 0 {
+				length = 0
+			}
 			if length > E.screenCols {
 				length = E.screenCols
 			}
-			ab.abAppendBytes(E.rows[filerow].chars[:length])
+			ab.abAppendBytes(E.rows[filerow].chars[E.coloff:length])
 		}
 		ab.abAppend("\x1b[K")
 		if y < E.screenRows-1 {
