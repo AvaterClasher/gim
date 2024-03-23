@@ -240,14 +240,21 @@ func editorOpen(filename string) {
 	defer fd.Close()
 	fp := bufio.NewReader(fd)
 
-	line, err := fp.ReadBytes('\n')
-	if err != nil {
-		die(err)
-	}
-	for c := line[len(line)-1]; len(line) > 0 && (c == '\n' || c == '\r'); line = line[:len(line)-1] {
+	for line, err := fp.ReadBytes('\n'); err == nil; line, err = fp.ReadBytes('\n') {
+		// Trim trailing newlines and carriage returns
+		for c := line[len(line)-1]; len(line) > 0 && (c == '\n' || c == '\r'); {
+			line = line[:len(line)-1]
+			if len(line) > 0 {
+				c = line[len(line)-1]
+			}
+		}
+		editorAppendRow(line)
 	}
 
-	editorAppendRow(line)
+	if err != nil && err != io.EOF {
+		die(err)
+	}
+
 }
 
 /* Input */
@@ -325,11 +332,14 @@ func editorRefreshScreen() {
 	editorDrawRows(&ab)
 	ab.abAppend(fmt.Sprintf("\x1b[%d;%dH", E.cy+1, E.cx+1))
 	ab.abAppend("\x1b[25h")
-	io.WriteString(os.Stdout, ab.String())
+	_, e := io.WriteString(os.Stdout, ab.String())
+	if e != nil {
+		log.Fatal(e)
+	}
 }
 
 func editorDrawRows(ab *abuf) {
-	for y := 0; y < E.screenRows-1; y++ {
+	for y := 0; y < E.screenRows; y++ {
 		if y >= E.numRows {
 			if E.numRows == 0 && y == E.screenRows/3 {
 				w := fmt.Sprintf("Gim editor -- version %s", GIM_VERSION)
@@ -346,11 +356,11 @@ func editorDrawRows(ab *abuf) {
 				ab.abAppend("~")
 			}
 		} else {
-			length := len(E.rows.chars)
+			length := len(E.rows[y].chars)
 			if length > E.screenCols {
 				length = E.screenCols
 			}
-			ab.abAppendBytes(E.rows.chars[:length])
+			ab.abAppendBytes(E.rows[y].chars[:length])
 		}
 		ab.abAppend("\x1b[K")
 		if y < E.screenRows-1 {
