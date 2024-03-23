@@ -300,6 +300,15 @@ func editorRowInsertChar(row *erow, at int, c byte) {
 
 /*** editor operations ***/
 
+func editorInsertChar(c byte) {
+	if E.cy == E.numRows {
+		var emptyRow []byte
+		editorAppendRow(emptyRow)
+	}
+	editorRowInsertChar(&E.rows[E.cy], E.cx, c)
+	E.cx++
+}
+
 /*** file I/O ***/
 
 func editorOpen(filename string) {
@@ -397,7 +406,11 @@ func editorProcessKeypress() {
 		}
 	case ARROW_LEFT, ARROW_RIGHT, ARROW_UP, ARROW_DOWN:
 		editorMoveCursor(c)
+
+	default:
+		editorInsertChar(byte(c))
 	}
+
 }
 
 /* Append Buffer */
