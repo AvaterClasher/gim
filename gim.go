@@ -461,9 +461,7 @@ func editorDrawRows(ab *abuf) {
 			}
 		}
 		ab.abAppend("\x1b[K")
-		if y < E.screenRows-1 {
-			ab.abAppend("\r\n")
-		}
+		ab.abAppend("\r\n")
 	}
 }
 
@@ -473,6 +471,7 @@ func initEditor() {
 	if getWindowSize(&E.screenRows, &E.screenCols) == -1 {
 		die(fmt.Errorf("couldn't get screen size"))
 	}
+	E.screenRows--
 }
 
 func main() {
