@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"syscall"
+	"time"
 	"unsafe"
 )
 
@@ -47,17 +48,19 @@ type erow struct {
 }
 
 type editorConfig struct {
-	cy          int
-	cx          int
-	rx          int
-	rowoff      int
-	coloff      int
-	screenRows  int
-	screenCols  int
-	numRows     int
-	rows        []erow
-	filename    string
-	origTermios *Termios
+	cy             int
+	cx             int
+	rx             int
+	rowoff         int
+	coloff         int
+	screenRows     int
+	screenCols     int
+	numRows        int
+	rows           []erow
+	filename       string
+	statusmsg      string
+	statusmsg_time time.Time
+	origTermios    *Termios
 }
 
 type WinSize struct {
