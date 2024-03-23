@@ -47,7 +47,7 @@ type editorConfig struct {
 	screenRows  int
 	screenCols  int
 	numRows     int
-	rows        erow
+	rows        *erow
 	origTermios *Termios
 }
 
