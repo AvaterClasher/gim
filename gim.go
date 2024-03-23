@@ -313,13 +313,13 @@ func editorMoveCursor(key int) {
 			E.cx--
 		} else if E.cy > 0 {
 			E.cy--
-			E.cx = E.rows[E.cy].rsize
+			E.cx = E.rows[E.cy].size
 		}
 	case ARROW_RIGHT:
 		if E.cy < E.numRows {
-			if E.cx < E.rows[E.cy].rsize {
+			if E.cx < E.rows[E.cy].size {
 				E.cx++
-			} else if E.cx == E.rows[E.cy].rsize {
+			} else if E.cx == E.rows[E.cy].size {
 				E.cy++
 				E.cx = 0
 			}
@@ -336,7 +336,7 @@ func editorMoveCursor(key int) {
 
 	rowlen := 0
 	if E.cy < E.numRows {
-		rowlen = E.rows[E.cy].rsize
+		rowlen = E.rows[E.cy].size
 	}
 	if E.cx > rowlen {
 		E.cx = rowlen
@@ -354,7 +354,9 @@ func editorProcessKeypress() {
 	case HOME_KEY:
 		E.cx = 0
 	case END_KEY:
-		E.cx = E.screenCols - 1
+		if E.cy < E.numRows {
+			E.cx = E.rows[E.cy].size
+		}
 	case PAGE_UP, PAGE_DOWN:
 		dir := ARROW_DOWN
 		if c == PAGE_UP {
@@ -450,10 +452,13 @@ func editorDrawRows(ab *abuf) {
 			if len < 0 {
 				len = 0
 			}
-			if len > E.screenCols {
-				len = E.screenCols
+			if len > 0 {
+				if len > E.screenCols {
+					len = E.screenCols
+				}
+				rindex := E.coloff + len
+				ab.abAppendBytes(E.rows[filerow].render[E.coloff:rindex])
 			}
-			ab.abAppendBytes(E.rows[filerow].render[E.coloff : E.coloff+len])
 		}
 		ab.abAppend("\x1b[K")
 		if y < E.screenRows-1 {
