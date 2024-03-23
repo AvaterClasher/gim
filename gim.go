@@ -45,6 +45,7 @@ type editorConfig struct {
 	cy          int
 	cx          int
 	rowoff      int
+	coloff      int
 	screenRows  int
 	screenCols  int
 	numRows     int
