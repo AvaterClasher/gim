@@ -11,7 +11,13 @@ import (
 
 /* Defines */
 
-const KILO_VERSION = "0.0.1"
+const GIM_VERSION = "0.0.1"
+const (
+	ARROW_LEFT  = 'a'
+	ARROW_RIGHT = 'd'
+	ARROW_UP    = 'w'
+	ARROW_DOWN  = 's'
+)
 
 /* DATA */
 
@@ -108,13 +114,13 @@ func editorReadKey() byte {
 		if seq[0] == '[' {
 			switch seq[1] {
 			case 'A':
-				return 'w'
+				return ARROW_UP
 			case 'B':
-				return 's'
+				return ARROW_DOWN
 			case 'C':
-				return 'd'
+				return ARROW_RIGHT
 			case 'D':
-				return 'a'
+				return ARROW_LEFT
 			}
 		}
 
@@ -173,13 +179,13 @@ func getWindowSize(rows *int, cols *int) int {
 
 func editorMoveCursor(key byte) {
 	switch key {
-	case 'a':
+	case ARROW_LEFT:
 		E.cx--
-	case 'd':
+	case ARROW_RIGHT:
 		E.cx++
-	case 'w':
+	case ARROW_UP:
 		E.cy--
-	case 's':
+	case ARROW_DOWN:
 		E.cy++
 	}
 }
@@ -192,7 +198,7 @@ func editorProcessKeypress() {
 		io.WriteString(os.Stdout, "\x1b[H")
 		disableRawMode()
 		os.Exit(0)
-	case 'w', 'a', 's', 'd':
+	case ARROW_LEFT, ARROW_RIGHT, ARROW_UP, ARROW_DOWN:
 		editorMoveCursor(c)
 	}
 }
@@ -226,7 +232,7 @@ func editorRefreshScreen() {
 func editorDrawRows(ab *abuf) {
 	for y := 0; y < E.screenRows-1; y++ {
 		if y == E.screenRows/3 {
-			w := fmt.Sprintf("Kilo editor -- version %s", KILO_VERSION)
+			w := fmt.Sprintf("Gim editor -- version %s", GIM_VERSION)
 			if len(w) > E.screenCols {
 				w = w[0:E.screenCols]
 			}
