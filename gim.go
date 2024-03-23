@@ -233,9 +233,9 @@ func getWindowSize(rows *int, cols *int) int {
 
 func editorRowCxToRx(row *erow, cx int) int {
 	rx := 0
-	for j := 0; j < cx; j++ {
+	for j := 0; j < row.size && j < cx; j++ {
 		if row.chars[j] == '\t' {
-			rx += (GIM_TAB_STOP - 1) - (rx % GIM_TAB_STOP)
+			rx += ((GIM_TAB_STOP - 1) - (rx % GIM_TAB_STOP))
 		}
 		rx++
 	}
@@ -389,7 +389,10 @@ func (p *abuf) abAppendBytes(b []byte) {
 /* Output */
 
 func editorScroll() {
-	E.rx = E.cx
+	E.rx = 0
+	if E.cy < E.numRows {
+		E.rx = editorRowCxToRx(&(E.rows[E.cy]), E.cx)
+	}
 	if E.cy < E.rowoff {
 		E.rowoff = E.cy
 	}
@@ -411,7 +414,7 @@ func editorRefreshScreen() {
 	ab.abAppend("\x1b[H")
 	editorDrawRows(&ab)
 	ab.abAppend(fmt.Sprintf("\x1b[%d;%dH", (E.cy-E.rowoff)+1, (E.rx-E.coloff)+1))
-	ab.abAppend("\x1b[25h")
+	ab.abAppend("\x1b[?25h")
 	_, e := io.WriteString(os.Stdout, ab.String())
 	if e != nil {
 		log.Fatal(e)
