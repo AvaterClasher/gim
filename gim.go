@@ -325,6 +325,14 @@ func editorInsertChar(c byte) {
 	E.cx++
 }
 
+func editorDelChar() {
+	if E.cy == E.numRows { return }
+	if E.cx > 0 {
+		editorRowDelChar(&E.rows[E.cy], E.cx - 1)
+		E.cx--
+	}
+}
+
 /*** file I/O ***/
 
 func editorRowsToString() (string, int) {
