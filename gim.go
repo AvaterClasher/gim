@@ -289,6 +289,9 @@ func editorDelRow(at int) {
 	if at < 0 || at > E.numRows {
 		return
 	}
+	E.rows = append(E.rows[:at], E.rows[at+1:]...)
+	E.numRows--
+	E.dirty = true
 }
 
 func editorRowInsertChar(row *erow, at int, c byte) {
