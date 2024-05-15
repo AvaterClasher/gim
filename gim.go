@@ -308,7 +308,10 @@ func editorRowDelChar(row *erow, at int) {
 	if at < 0 || at > row.size {
 		return
 	}
-	copy(row.chars[at:], row.chars[at+1:])
+	tmp := make([]byte, row.size-1)
+	copy(tmp[0:], row.chars[0:at])
+	copy(tmp[at:], row.chars[at+1:])
+	row.chars = tmp
 	row.size--
 	E.dirty = true
 	editorUpdateRow(row)
@@ -326,9 +329,11 @@ func editorInsertChar(c byte) {
 }
 
 func editorDelChar() {
-	if E.cy == E.numRows { return }
+	if E.cy == E.numRows {
+		return
+	}
 	if E.cx > 0 {
-		editorRowDelChar(&E.rows[E.cy], E.cx - 1)
+		editorRowDelChar(&E.rows[E.cy], E.cx-1)
 		E.cx--
 	}
 }
@@ -443,6 +448,10 @@ func editorProcessKeypress() {
 	case '\r':
 		break
 	case ('h' & 0x1f), BACKSPACE, DEL_KEY:
+		if c == DEL_KEY {
+			editorMoveCursor(ARROW_RIGHT)
+		}
+		editorDelChar()
 		break
 	case ('q' & 0x1f):
 		if E.dirty && quitTimes > 0 {
