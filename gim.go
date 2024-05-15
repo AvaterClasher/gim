@@ -15,6 +15,7 @@ import (
 
 const GIM_VERSION = "0.0.1"
 const GIM_TAB_STOP = 8
+const GIM_QUIT_TIMES = 3
 
 const (
 	BACKSPACE   = 127
@@ -416,6 +417,8 @@ func editorMoveCursor(key int) {
 	}
 }
 
+var quitTimes int = GIM_QUIT_TIMES
+
 func editorProcessKeypress() {
 	c := editorReadKey()
 	switch c {
@@ -424,6 +427,11 @@ func editorProcessKeypress() {
 	case ('h' & 0x1f), BACKSPACE, DEL_KEY:
 		break
 	case ('q' & 0x1f):
+		if E.dirty && quitTimes > 0 {
+			editorSetStatusMessage("Warning!!! File has unsaved changes. Press Ctrl-Q %d more times to quit.", quitTimes)
+			quitTimes--
+			return
+		}
 		io.WriteString(os.Stdout, "\x1b[2J")
 		io.WriteString(os.Stdout, "\x1b[H")
 		disableRawMode()
@@ -459,6 +467,8 @@ func editorProcessKeypress() {
 	default:
 		editorInsertChar(byte(c))
 	}
+
+	quitTimes = GIM_QUIT_TIMES
 
 }
 
