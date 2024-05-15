@@ -304,6 +304,16 @@ func editorRowInsertChar(row *erow, at int, c byte) {
 	E.dirty = true
 }
 
+func editorRowDelChar(row *erow, at int) {
+	if at < 0 || at > row.size {
+		return
+	}
+	copy(row.chars[at:], row.chars[at+1:])
+	row.size--
+	E.dirty = true
+	editorUpdateRow(row)
+}
+
 /*** editor operations ***/
 
 func editorInsertChar(c byte) {
