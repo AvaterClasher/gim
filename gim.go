@@ -281,6 +281,7 @@ func editorAppendRow(s []byte) {
 	E.rows = append(E.rows, r)
 	editorUpdateRow(&E.rows[E.numRows])
 	E.numRows++
+	E.dirty = true
 }
 
 func editorRowInsertChar(row *erow, at int, c byte) {
@@ -299,6 +300,7 @@ func editorRowInsertChar(row *erow, at int, c byte) {
 	}
 	row.size = len(row.chars)
 	editorUpdateRow(row)
+	E.dirty = true
 }
 
 /*** editor operations ***/
